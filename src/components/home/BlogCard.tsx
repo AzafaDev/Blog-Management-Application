@@ -1,18 +1,16 @@
 import { Link } from "react-router-dom";
-import { useBlogStore, type Blog } from "../../stores/useBlogStore";
+import { type Blog } from "../../stores/useBlogStore";
 
 interface BlogCardProps {
   post: Blog;
 }
 
 const BlogCard = ({ post }: BlogCardProps) => {
-  const { setSelectedPost } = useBlogStore();
   return (
     <Link
       to={`/feeds/${post.objectId}`}
       key={post.objectId}
       className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all"
-      onClick={() => setSelectedPost(post)}
     >
       <div className="card-body">
         {/* Meta: Date & Category */}

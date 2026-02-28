@@ -13,8 +13,8 @@ export type Blog = {
 
 interface BlogStore {
   isLoading: boolean;
-  selectedPost: Blog | null;
   currentBlogs: Blog[] | null;
+  currentBlog: Blog | null;
   fetchBlogs: () => Promise<void>;
   postBlog: ({
     title,
@@ -35,7 +35,7 @@ interface BlogStore {
     publishedDate,
   }: Blog) => Promise<void>;
   deleteBlog: (objectId: string) => Promise<void>;
-  setSelectedPost: (post: Blog) => void;
+  getCurrentBlog: (postId: string | undefined) => Promise<void>;
 }
 
 export const useBlogStore = create<BlogStore>()(
@@ -43,10 +43,7 @@ export const useBlogStore = create<BlogStore>()(
     (set, get) => ({
       isLoading: false,
       currentBlogs: null,
-      selectedPost: null,
-      setSelectedPost: (post) => {
-        set({ selectedPost: post });
-      },
+      currentBlog: null,
       fetchBlogs: async () => {
         set({ isLoading: true });
         try {
@@ -117,7 +114,20 @@ export const useBlogStore = create<BlogStore>()(
           ).close();
         }
       },
+      getCurrentBlog: async (postId) => {
+        set({ currentBlog: null, isLoading: true });
+        try {
+          const currentPost = get().currentBlogs?.find(
+            (blog) => blog.objectId == postId,
+          );
+          set({ currentBlog: currentPost });
+        } catch (error) {
+          console.log("Error in getCurrentBlog: ", error);
+          toast.error("Something went wrong");
+        }
+      },
     }),
+
     {
       name: "blog-storage",
       storage: createJSONStorage(() => localStorage),
